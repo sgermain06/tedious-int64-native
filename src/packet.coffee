@@ -40,75 +40,67 @@ DEFAULT_WINDOW = 0;
 NL = '\n'
 
 class Packet
+  @fromBuffer: (buffer) ->
+    packet = new Packet()
+    packet._type = buffer.readUInt8(OFFSET.Type)
+    packet.status = buffer.readUInt8(OFFSET.Status)
+    packet.spid = buffer.readUInt16BE(OFFSET.SPID)
+    packet._packetId = buffer.readUInt8(OFFSET.PacketID)
+    packet.window = buffer.readUInt8(OFFSET.Window)
+    packet._data = buffer.slice(HEADER_LENGTH)
+    packet
+
   constructor: (typeOrBuffer) ->
     if typeOrBuffer instanceof Buffer
-      @buffer = typeOrBuffer
-    else
-      type = typeOrBuffer
+      return @constructor.fromBuffer(typeOrBuffer)
 
-      @buffer = new Buffer(HEADER_LENGTH)
-
-      @buffer.writeUInt8(type, OFFSET.Type)
-      @buffer.writeUInt8(STATUS.NORMAL, OFFSET.Status)
-      @buffer.writeUInt16BE(DEFAULT_SPID, OFFSET.SPID)
-      @buffer.writeUInt8(DEFAULT_PACKETID, OFFSET.PacketID)
-      @buffer.writeUInt8(DEFAULT_WINDOW, OFFSET.Window)
-
-      @setLength()
-
-  setLength: ->
-    @buffer.writeUInt16BE(@buffer.length, OFFSET.Length)
+    @_type = typeOrBuffer
+    @status = STATUS.NORMAL
+    @spid = DEFAULT_SPID
+    @_packetId = DEFAULT_PACKETID
+    @window = DEFAULT_WINDOW
+    @_data = new Buffer(0)
 
   length: ->
-    @buffer.readUInt16BE(OFFSET.Length)
+    @_data.length + HEADER_LENGTH
 
   resetConnection: (reset) ->
-    status = @buffer.readUInt8(OFFSET.Status)
-
     if reset
-      status |= STATUS.RESETCONNECTION
+      @status |= STATUS.RESETCONNECTION
     else
-      status &= 0xFF - STATUS.RESETCONNECTION
-
-    @buffer.writeUInt8(status, OFFSET.Status)
+      @status &= 0xFF - STATUS.RESETCONNECTION
 
   last: (last) ->
-    status = @buffer.readUInt8(OFFSET.Status)
-
     if arguments.length > 0
       if last
-        status |= STATUS.EOM
+        @status |= STATUS.EOM
       else
-        status &= 0xFF - STATUS.EOM
-
-      @buffer.writeUInt8(status, OFFSET.Status)
+        @status &= 0xFF - STATUS.EOM
 
     @isLast()
 
   isLast: ->
-    !!(@buffer.readUInt8(OFFSET.Status) & STATUS.EOM)
+    !!(@status & STATUS.EOM)
 
   packetId: (packetId) ->
     if packetId
-      @buffer.writeUInt8(packetId % 256, OFFSET.PacketID)
-
-    @buffer.readUInt8(OFFSET.PacketID)
+      @_packetId = packetId % 256
+    else
+      @_packetId
 
   addData: (data) ->
-    @buffer = Buffer.concat([@buffer, data])
-    @setLength()
+    @_data = Buffer.concat([@_data, data])
     @
 
   data: ->
-    @buffer.slice(HEADER_LENGTH)
+    @_data
 
   type: ->
-    @buffer.readUInt8(OFFSET.Type)
+    @_type
 
   statusAsString: ->
-    status = @buffer.readUInt8(OFFSET.Status)
     statuses = for name, value of STATUS
-      if status & value
+      if @status & value
         name
     statuses.join(' ').trim()
 
@@ -116,12 +108,12 @@ class Packet
     indent ||= ''
 
     text = sprintf('type:0x%02X(%s), status:0x%02X(%s), length:0x%04X, spid:0x%04X, packetId:0x%02X, window:0x%02X',
-      @buffer.readUInt8(OFFSET.Type), typeByValue[@buffer.readUInt8(OFFSET.Type)],
-      @buffer.readUInt8(OFFSET.Status), @statusAsString(),
-      @buffer.readUInt16BE(OFFSET.Length),
-      @buffer.readUInt16BE(OFFSET.SPID),
-      @buffer.readUInt8(OFFSET.PacketID),
-      @buffer.readUInt8(OFFSET.Window)
+      @_type, typeByValue[@_type],
+      @status, @statusAsString(),
+      @length(),
+      @spid,
+      @_packetId,
+      @window
     )
 
     indent + text
@@ -149,7 +141,7 @@ class Packet
           chars += ' '
       else
         chars += String.fromCharCode(data[offset])
-      
+
       if data[offset]?
         dataDump += sprintf('%02X', data[offset]);
 
@@ -176,6 +168,18 @@ class Packet
 
   payloadString: (indent) ->
     ""
+
+  Object.defineProperty @prototype, "buffer",
+    get: ->
+      buffer = new Buffer(@length())
+      buffer.writeUInt8(@_type, OFFSET.Type)
+      buffer.writeUInt8(@status, OFFSET.Status)
+      buffer.writeUInt16BE(buffer.length, OFFSET.Length)
+      buffer.writeUInt16BE(@spid, OFFSET.SPID)
+      buffer.writeUInt8(@_packetId, OFFSET.PacketID)
+      buffer.writeUInt8(@window, OFFSET.Window)
+      @_data.copy(buffer, HEADER_LENGTH)
+      buffer
 
 isPacketComplete = (potentialPacketBuffer) ->
   if potentialPacketBuffer.length < HEADER_LENGTH
