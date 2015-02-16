@@ -58,8 +58,9 @@ class Packet
     @window = DEFAULT_WINDOW
     @data = new Buffer(0)
 
-  length: ->
-    @data.length + HEADER_LENGTH
+  Object.defineProperty @prototype, "length",
+    get: ->
+      @data.length + HEADER_LENGTH
 
   resetConnection: (reset) ->
     if reset
@@ -103,7 +104,7 @@ class Packet
     text = sprintf('type:0x%02X(%s), status:0x%02X(%s), length:0x%04X, spid:0x%04X, packetId:0x%02X, window:0x%02X',
       @type, typeByValue[@type],
       @status, @statusAsString(),
-      @length(),
+      @length,
       @spid,
       @_packetId,
       @window
@@ -163,7 +164,7 @@ class Packet
 
   Object.defineProperty @prototype, "buffer",
     get: ->
-      buffer = new Buffer(@length())
+      buffer = new Buffer(@length)
       buffer.writeUInt8(@type, OFFSET.Type)
       buffer.writeUInt8(@status, OFFSET.Status)
       buffer.writeUInt16BE(buffer.length, OFFSET.Length)

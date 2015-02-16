@@ -38,15 +38,15 @@ exports.data = (test) ->
   allData = Buffer.concat([data1, data2])
 
   packet = new Packet(TYPE.PRELOGIN)
-  test.strictEqual(packet.length(), 8)
+  test.strictEqual(packet.length, 8)
   test.ok(packet.data.equals(new Buffer(0)))
 
   packet.addData(data1)
-  test.strictEqual(packet.length(), 8 + data1.length)
+  test.strictEqual(packet.length, 8 + data1.length)
   test.ok(packet.data.equals(data1))
 
   packet.addData(data2)
-  test.strictEqual(packet.length(), 8 + allData.length)
+  test.strictEqual(packet.length, 8 + allData.length)
   test.ok(packet.data.equals(allData))
 
   test.done()
@@ -55,7 +55,7 @@ exports.createFromBuffer = (test) ->
   buffer = new Buffer([TYPE.PRELOGIN, 0x01, 0x00, 0x0A, 0, 0, 0, 0, 0x01, 0xFF])
   packet = Packet.fromBuffer(buffer)
 
-  test.strictEqual(packet.length(), 0x0A)
+  test.strictEqual(packet.length, 0x0A)
   test.ok(packet.isLast())
   test.ok(packet.data.equals(new Buffer([0x01, 0xFF])))
 
