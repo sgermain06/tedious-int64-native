@@ -81,7 +81,7 @@ class MessageIO extends EventEmitter
 
       packet = new Packet(packetType)
       packet.last = packetNumber == numberOfPackets - 1
-      packet.resetConnection(resetConnection)
+      packet.resetConnection = true if resetConnection
       packet.packetId = packetNumber + 1
       packet.data = packetPayload
 

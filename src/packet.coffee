@@ -62,11 +62,15 @@ class Packet
     get: ->
       @data.length + HEADER_LENGTH
 
-  resetConnection: (reset) ->
-    if reset
-      @status |= STATUS.RESETCONNECTION
-    else
-      @status &= 0xFF - STATUS.RESETCONNECTION
+  Object.defineProperty @prototype, "resetConnection",
+    get: ->
+      !!(@status & STATUS.RESETCONNECTION)
+
+    set: (reset) ->
+      if reset
+        @status |= STATUS.RESETCONNECTION
+      else
+        @status &= 0xFF - STATUS.RESETCONNECTION
 
   Object.defineProperty @prototype, "last",
     get: ->
