@@ -78,12 +78,12 @@ class Packet
       else
         @status &= 0xFF - STATUS.EOM
 
-  packetId: (packetId) ->
-    #console.trace("Called paketId")
-    if packetId
-      @_packetId = packetId % 256
-    else
+  Object.defineProperty @prototype, "packetId",
+    get: ->
       @_packetId
+
+    set: (packetId) ->
+      @_packetId = packetId % 256
 
   statusAsString: ->
     statuses = for name, value of STATUS

@@ -60,11 +60,11 @@ exports.sendOneLongerThanPacket = (test) ->
     switch packetNumber
       when 1
         test.ok(!packet.last)
-        test.strictEqual(packet.packetId(), packetNumber)
+        test.strictEqual(packet.packetId, packetNumber)
         test.ok(packet.data.equals(new Buffer([1, 2, 3, 4])))
       when 2
         test.ok(packet.last)
-        test.strictEqual(packet.packetId(), packetNumber)
+        test.strictEqual(packet.packetId, packetNumber)
         test.ok(packet.data.equals(new Buffer([5])))
 
         test.done()

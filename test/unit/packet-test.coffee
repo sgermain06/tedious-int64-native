@@ -25,10 +25,10 @@ exports.last = (test) ->
 
 exports.packetId = (test) ->
   packet = new Packet(TYPE.PRELOGIN)
-  test.strictEqual(packet.packetId(), 1)
+  test.strictEqual(packet.packetId, 1)
 
-  packet.packetId(2)
-  test.strictEqual(packet.packetId(), 2)
+  packet.packetId = 2
+  test.strictEqual(packet.packetId, 2)
 
   test.done()
 
