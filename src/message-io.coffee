@@ -29,7 +29,7 @@ class MessageIO extends EventEmitter
       @logPacket('Received', packet);
 
       packetsData.push(packet.data)
-      if (packet.isLast())
+      if (packet.last)
         endOfMessage = true
 
       @packetBuffer = @packetBuffer.slice(length)
@@ -80,7 +80,7 @@ class MessageIO extends EventEmitter
       packetPayload = data.slice(payloadStart, payloadEnd)
 
       packet = new Packet(packetType)
-      packet.last(packetNumber == numberOfPackets - 1)
+      packet.last = packetNumber == numberOfPackets - 1
       packet.resetConnection(resetConnection)
       packet.packetId(packetNumber + 1)
       packet.addData(packetPayload)

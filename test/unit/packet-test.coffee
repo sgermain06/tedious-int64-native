@@ -14,12 +14,12 @@ exports.createEmpty = (test) ->
 
 exports.last = (test) ->
   packet = new Packet(TYPE.PRELOGIN)
-  test.ok(!packet.isLast())
+  test.ok(!packet.last)
 
   packet = new Packet(TYPE.PRELOGIN)
-  test.ok(!packet.last())
-  packet.last(true)
-  test.ok(packet.last())
+  test.ok(!packet.last)
+  packet.last = true
+  test.ok(packet.last)
 
   test.done()
 
@@ -56,7 +56,7 @@ exports.createFromBuffer = (test) ->
   packet = Packet.fromBuffer(buffer)
 
   test.strictEqual(packet.length, 0x0A)
-  test.ok(packet.isLast())
+  test.ok(packet.last)
   test.ok(packet.data.equals(new Buffer([0x01, 0xFF])))
 
   test.done()

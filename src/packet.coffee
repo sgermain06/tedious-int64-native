@@ -68,18 +68,15 @@ class Packet
     else
       @status &= 0xFF - STATUS.RESETCONNECTION
 
-  last: (last) ->
-    #console.trace("Called last")
-    if arguments.length > 0
+  Object.defineProperty @prototype, "last",
+    get: ->
+      !!(@status & STATUS.EOM)
+
+    set: (last) ->
       if last
         @status |= STATUS.EOM
       else
         @status &= 0xFF - STATUS.EOM
-
-    @isLast()
-
-  isLast: ->
-    !!(@status & STATUS.EOM)
 
   packetId: (packetId) ->
     #console.trace("Called paketId")

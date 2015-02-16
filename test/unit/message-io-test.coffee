@@ -22,7 +22,7 @@ exports.sendSmallerThanOnePacket = (test) ->
 
   connection = new Connection()
   connection.on('packet', (packet) ->
-    test.ok(packet.last())
+    test.ok(packet.last)
     test.strictEqual(packet.type, packetType)
     test.ok(packet.data.equals(payload))
 
@@ -37,7 +37,7 @@ exports.sendExactlyPacket = (test) ->
 
   connection = new Connection()
   connection.on('packet', (packet) ->
-    test.ok(packet.last())
+    test.ok(packet.last)
     test.strictEqual(packet.type, packetType)
     test.ok(packet.data.equals(payload))
 
@@ -59,11 +59,11 @@ exports.sendOneLongerThanPacket = (test) ->
 
     switch packetNumber
       when 1
-        test.ok(!packet.last())
+        test.ok(!packet.last)
         test.strictEqual(packet.packetId(), packetNumber)
         test.ok(packet.data.equals(new Buffer([1, 2, 3, 4])))
       when 2
-        test.ok(packet.last())
+        test.ok(packet.last)
         test.strictEqual(packet.packetId(), packetNumber)
         test.ok(packet.data.equals(new Buffer([5])))
 
@@ -88,7 +88,7 @@ exports.receiveOnePacket = (test) ->
   )
 
   packet = new Packet(packetType)
-  packet.last(true)
+  packet.last = true
   packet.addData(payload)
   connection.emit('data', packet.buffer)
 
@@ -107,7 +107,7 @@ exports.receiveOnePacketInTwoChunks = (test) ->
   )
 
   packet = new Packet(packetType)
-  packet.last(true)
+  packet.last = true
   packet.addData(payload)
   connection.emit('data', packet.buffer.slice(0, 4))
   connection.emit('data', packet.buffer.slice(4))
@@ -141,7 +141,7 @@ exports.receiveTwoPackets = (test) ->
   connection.emit('data', packet.buffer)
 
   packet = new Packet(packetType)
-  packet.last(true)
+  packet.last = true
   packet.addData(payload2)
   connection.emit('data', packet.buffer)
 
@@ -173,7 +173,7 @@ exports.receiveTwoPacketsWithChunkSpanningPackets = (test) ->
   packet1.addData(payload.slice(0, 2))
 
   packet2 = new Packet(packetType)
-  packet2.last(true)
+  packet2.last = true
   packet2.addData(payload.slice(2, 4))
 
   connection.emit('data', packet1.buffer.slice(0, 6))
@@ -208,7 +208,7 @@ exports.receiveMultiplePacketsWithMoreThanOnePacketFromOneChunk = (test) ->
   packet2.addData(payload.slice(2, 4))
 
   packet3 = new Packet(packetType)
-  packet3.last(true)
+  packet3.last = true
   packet3.addData(payload.slice(4, 6))
 
   allData = Buffer.concat([packet1.buffer, packet2.buffer, packet3.buffer])
