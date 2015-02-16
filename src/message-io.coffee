@@ -83,7 +83,7 @@ class MessageIO extends EventEmitter
       packet.last = packetNumber == numberOfPackets - 1
       packet.resetConnection(resetConnection)
       packet.packetId(packetNumber + 1)
-      packet.addData(packetPayload)
+      packet.data = packetPayload
 
       @sendPacket(packet, packetType)
 

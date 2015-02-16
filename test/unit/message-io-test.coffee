@@ -89,7 +89,7 @@ exports.receiveOnePacket = (test) ->
 
   packet = new Packet(packetType)
   packet.last = true
-  packet.addData(payload)
+  packet.data = payload
   connection.emit('data', packet.buffer)
 
 exports.receiveOnePacketInTwoChunks = (test) ->
@@ -108,7 +108,7 @@ exports.receiveOnePacketInTwoChunks = (test) ->
 
   packet = new Packet(packetType)
   packet.last = true
-  packet.addData(payload)
+  packet.data = payload
   connection.emit('data', packet.buffer.slice(0, 4))
   connection.emit('data', packet.buffer.slice(4))
 
@@ -137,12 +137,12 @@ exports.receiveTwoPackets = (test) ->
   )
 
   packet = new Packet(packetType)
-  packet.addData(payload1)
+  packet.data = payload1
   connection.emit('data', packet.buffer)
 
   packet = new Packet(packetType)
   packet.last = true
-  packet.addData(payload2)
+  packet.data = payload2
   connection.emit('data', packet.buffer)
 
 exports.receiveTwoPacketsWithChunkSpanningPackets = (test) ->
@@ -170,11 +170,11 @@ exports.receiveTwoPacketsWithChunkSpanningPackets = (test) ->
   )
 
   packet1 = new Packet(packetType)
-  packet1.addData(payload.slice(0, 2))
+  packet1.data = payload.slice(0, 2)
 
   packet2 = new Packet(packetType)
   packet2.last = true
-  packet2.addData(payload.slice(2, 4))
+  packet2.data = payload.slice(2, 4)
 
   connection.emit('data', packet1.buffer.slice(0, 6))
   connection.emit('data', Buffer.concat([packet1.buffer.slice(6), packet2.buffer.slice(0, 4)]))
@@ -202,14 +202,14 @@ exports.receiveMultiplePacketsWithMoreThanOnePacketFromOneChunk = (test) ->
   )
 
   packet1 = new Packet(packetType)
-  packet1.addData(payload.slice(0, 2))
+  packet1.data = payload.slice(0, 2)
 
   packet2 = new Packet(packetType)
-  packet2.addData(payload.slice(2, 4))
+  packet2.data = payload.slice(2, 4)
 
   packet3 = new Packet(packetType)
   packet3.last = true
-  packet3.addData(payload.slice(4, 6))
+  packet3.data = payload.slice(4, 6)
 
   allData = Buffer.concat([packet1.buffer, packet2.buffer, packet3.buffer])
   data1 = allData.slice(0, 5)

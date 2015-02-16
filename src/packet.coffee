@@ -85,10 +85,6 @@ class Packet
     else
       @_packetId
 
-  addData: (data) ->
-    @data = Buffer.concat([@data, data])
-    @
-
   statusAsString: ->
     statuses = for name, value of STATUS
       if @status & value

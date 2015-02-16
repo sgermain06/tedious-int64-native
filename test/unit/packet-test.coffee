@@ -41,11 +41,11 @@ exports.data = (test) ->
   test.strictEqual(packet.length, 8)
   test.ok(packet.data.equals(new Buffer(0)))
 
-  packet.addData(data1)
+  packet.data = data1
   test.strictEqual(packet.length, 8 + data1.length)
   test.ok(packet.data.equals(data1))
 
-  packet.addData(data2)
+  packet.data = Buffer.concat([data1, data2])
   test.strictEqual(packet.length, 8 + allData.length)
   test.ok(packet.data.equals(allData))
 
@@ -74,7 +74,7 @@ exports.dataToStringShort = (test) ->
   data = new Buffer([0x01, 0x02, 0x03])
 
   packet = new Packet(TYPE.PRELOGIN)
-  packet.addData(data)
+  packet.data = data
 
   expectedText = '--0000  010203  ...'
   test.strictEqual(packet.dataToString('--'), expectedText)
@@ -88,10 +88,7 @@ exports.dataExactLinesWorth = (test) ->
   dataLine2b = new Buffer([0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F])
 
   packet = new Packet(TYPE.PRELOGIN)
-  packet.addData(dataLine1a)
-  packet.addData(dataLine1b)
-  packet.addData(dataLine2a)
-  packet.addData(dataLine2b)
+  packet.data = Buffer.concat([dataLine1a, dataLine1b, dataLine2a, dataLine2b])
 
   expectedTextLine1a = '--0000  00010203 04050607 08090A0B 0C0D0E0F'
   expectedTextLine1b =        ' 10111213 14151617 18191A1B 1C1D1E1F'
@@ -109,11 +106,7 @@ exports.dataToStringMultipleLines = (test) ->
   dataLine3a = new Buffer([0x30, 0x31, 0x32])
 
   packet = new Packet(TYPE.PRELOGIN)
-  packet.addData(dataLine1a)
-  packet.addData(dataLine1b)
-  packet.addData(dataLine2a)
-  packet.addData(dataLine2b)
-  packet.addData(dataLine3a)
+  packet.data = Buffer.concat([dataLine1a, dataLine1b, dataLine2a, dataLine2b, dataLine3a])
 
   expectedTextLine1a = '--0000  00010203 04050607 08090A0B 0C0D0E0F'
   expectedTextLine1b =        ' 10111213 14151617 18191A1B 1C1D1E1F'
