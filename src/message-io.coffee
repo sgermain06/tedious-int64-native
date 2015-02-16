@@ -28,7 +28,7 @@ class MessageIO extends EventEmitter
       packet = Packet.fromBuffer(@packetBuffer.slice(0, length))
       @logPacket('Received', packet);
 
-      packetsData.push(packet.data())
+      packetsData.push(packet.data)
       if (packet.isLast())
         endOfMessage = true
 

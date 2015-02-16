@@ -47,7 +47,7 @@ class Packet
     packet.spid = buffer.readUInt16BE(OFFSET.SPID)
     packet._packetId = buffer.readUInt8(OFFSET.PacketID)
     packet.window = buffer.readUInt8(OFFSET.Window)
-    packet._data = buffer.slice(HEADER_LENGTH)
+    packet.data = buffer.slice(HEADER_LENGTH)
     packet
 
   constructor: (typeOrBuffer) ->
@@ -56,10 +56,10 @@ class Packet
     @spid = DEFAULT_SPID
     @_packetId = DEFAULT_PACKETID
     @window = DEFAULT_WINDOW
-    @_data = new Buffer(0)
+    @data = new Buffer(0)
 
   length: ->
-    @_data.length + HEADER_LENGTH
+    @data.length + HEADER_LENGTH
 
   resetConnection: (reset) ->
     if reset
@@ -68,6 +68,7 @@ class Packet
       @status &= 0xFF - STATUS.RESETCONNECTION
 
   last: (last) ->
+    #console.trace("Called last")
     if arguments.length > 0
       if last
         @status |= STATUS.EOM
@@ -80,17 +81,15 @@ class Packet
     !!(@status & STATUS.EOM)
 
   packetId: (packetId) ->
+    #console.trace("Called paketId")
     if packetId
       @_packetId = packetId % 256
     else
       @_packetId
 
   addData: (data) ->
-    @_data = Buffer.concat([@_data, data])
+    @data = Buffer.concat([@data, data])
     @
-
-  data: ->
-    @_data
 
   statusAsString: ->
     statuses = for name, value of STATUS
@@ -119,25 +118,24 @@ class Packet
 
     indent ||= ''
 
-    data = @data()
     dataDump = ''
     chars = ''
 
-    for offset in [0..data.length - 1]
+    for offset in [0..@data.length - 1]
       if offset % BYTES_PER_LINE == 0
         dataDump += indent;
         dataDump += sprintf('%04X  ', offset);
 
-      if data[offset] < 0x20 || data[offset] > 0x7E
+      if @data[offset] < 0x20 || @data[offset] > 0x7E
         chars += '.'
 
         if ((offset + 1) % CHARS_PER_GROUP == 0) && !((offset + 1) % BYTES_PER_LINE == 0)
           chars += ' '
       else
-        chars += String.fromCharCode(data[offset])
+        chars += String.fromCharCode(@data[offset])
 
-      if data[offset]?
-        dataDump += sprintf('%02X', data[offset]);
+      if @data[offset]?
+        dataDump += sprintf('%02X', @data[offset]);
 
       if ((offset + 1) % BYTES_PER_GROUP == 0) && !((offset + 1) % BYTES_PER_LINE == 0)
         # Inter-group space.
@@ -147,7 +145,7 @@ class Packet
         dataDump += '  ' + chars
         chars = ''
 
-        if offset < data.length - 1
+        if offset < @data.length - 1
           dataDump += NL;
 
     if chars.length
@@ -172,7 +170,7 @@ class Packet
       buffer.writeUInt16BE(@spid, OFFSET.SPID)
       buffer.writeUInt8(@_packetId, OFFSET.PacketID)
       buffer.writeUInt8(@window, OFFSET.Window)
-      @_data.copy(buffer, HEADER_LENGTH)
+      @data.copy(buffer, HEADER_LENGTH)
       buffer
 
 isPacketComplete = (potentialPacketBuffer) ->
