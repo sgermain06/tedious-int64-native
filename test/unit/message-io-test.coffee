@@ -11,7 +11,7 @@ class Connection extends EventEmitter
   connect: ->
 
   write: (data) ->
-    packet = new Packet(data)
+    packet = Packet.fromBuffer(data)
     @emit('packet', packet)
 
 packetType = 2

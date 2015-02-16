@@ -53,7 +53,7 @@ exports.data = (test) ->
 
 exports.createFromBuffer = (test) ->
   buffer = new Buffer([TYPE.PRELOGIN, 0x01, 0x00, 0x0A, 0, 0, 0, 0, 0x01, 0xFF])
-  packet = new Packet(buffer)
+  packet = Packet.fromBuffer(buffer)
 
   test.strictEqual(packet.length(), 0x0A)
   test.ok(packet.isLast())
@@ -63,7 +63,7 @@ exports.createFromBuffer = (test) ->
 
 exports.headerToString = (test) ->
   buffer = new Buffer([TYPE.PRELOGIN, 0x03, 0x00, 0x0A, 0, 1, 2, 3, 0x01, 0xFF])
-  packet = new Packet(buffer)
+  packet = Packet.fromBuffer(buffer)
 
   expectedText = '--type:0x12(PRELOGIN), status:0x03(EOM IGNORE), length:0x000A, spid:0x0001, packetId:0x02, window:0x03'
   test.strictEqual(packet.headerToString('--'), expectedText)

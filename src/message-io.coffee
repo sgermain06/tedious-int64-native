@@ -25,7 +25,7 @@ class MessageIO extends EventEmitter
 
     while isPacketComplete(@packetBuffer)
       length = packetLength(@packetBuffer)
-      packet = new Packet(@packetBuffer.slice(0, length))
+      packet = Packet.fromBuffer(@packetBuffer.slice(0, length))
       @logPacket('Received', packet);
 
       packetsData.push(packet.data())

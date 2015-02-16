@@ -51,9 +51,6 @@ class Packet
     packet
 
   constructor: (typeOrBuffer) ->
-    if typeOrBuffer instanceof Buffer
-      return @constructor.fromBuffer(typeOrBuffer)
-
     @_type = typeOrBuffer
     @status = STATUS.NORMAL
     @spid = DEFAULT_SPID
