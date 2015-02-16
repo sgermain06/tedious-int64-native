@@ -23,7 +23,7 @@ exports.sendSmallerThanOnePacket = (test) ->
   connection = new Connection()
   connection.on('packet', (packet) ->
     test.ok(packet.last())
-    test.strictEqual(packet.type(), packetType)
+    test.strictEqual(packet.type, packetType)
     test.ok(packet.data().equals(payload))
 
     test.done()
@@ -38,7 +38,7 @@ exports.sendExactlyPacket = (test) ->
   connection = new Connection()
   connection.on('packet', (packet) ->
     test.ok(packet.last())
-    test.strictEqual(packet.type(), packetType)
+    test.strictEqual(packet.type, packetType)
     test.ok(packet.data().equals(payload))
 
     test.done()
@@ -55,7 +55,7 @@ exports.sendOneLongerThanPacket = (test) ->
   connection.on('packet', (packet) ->
     packetNumber++
 
-    test.strictEqual(packet.type(), packetType)
+    test.strictEqual(packet.type, packetType)
 
     switch packetNumber
       when 1

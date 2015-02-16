@@ -42,7 +42,7 @@ NL = '\n'
 class Packet
   @fromBuffer: (buffer) ->
     packet = new Packet()
-    packet._type = buffer.readUInt8(OFFSET.Type)
+    packet.type = buffer.readUInt8(OFFSET.Type)
     packet.status = buffer.readUInt8(OFFSET.Status)
     packet.spid = buffer.readUInt16BE(OFFSET.SPID)
     packet._packetId = buffer.readUInt8(OFFSET.PacketID)
@@ -51,7 +51,7 @@ class Packet
     packet
 
   constructor: (typeOrBuffer) ->
-    @_type = typeOrBuffer
+    @type = typeOrBuffer
     @status = STATUS.NORMAL
     @spid = DEFAULT_SPID
     @_packetId = DEFAULT_PACKETID
@@ -92,9 +92,6 @@ class Packet
   data: ->
     @_data
 
-  type: ->
-    @_type
-
   statusAsString: ->
     statuses = for name, value of STATUS
       if @status & value
@@ -105,7 +102,7 @@ class Packet
     indent ||= ''
 
     text = sprintf('type:0x%02X(%s), status:0x%02X(%s), length:0x%04X, spid:0x%04X, packetId:0x%02X, window:0x%02X',
-      @_type, typeByValue[@_type],
+      @type, typeByValue[@type],
       @status, @statusAsString(),
       @length(),
       @spid,
@@ -169,7 +166,7 @@ class Packet
   Object.defineProperty @prototype, "buffer",
     get: ->
       buffer = new Buffer(@length())
-      buffer.writeUInt8(@_type, OFFSET.Type)
+      buffer.writeUInt8(@type, OFFSET.Type)
       buffer.writeUInt8(@status, OFFSET.Status)
       buffer.writeUInt16BE(buffer.length, OFFSET.Length)
       buffer.writeUInt16BE(@spid, OFFSET.SPID)
