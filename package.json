@@ -41,6 +41,7 @@
   },
   "dependencies": {
     "big-number": "0.3.0",
+    "concentrate": "^0.2.3",
     "iconv-lite": "0.4.2",
     "sprintf": "0.1.1"
   },
