@@ -49,9 +49,11 @@ convertLEBytesToString = (buffer) ->
 numberToInt64LE = (num) ->
   # adapted from https://github.com/broofa/node-int64
   negate = num < 0
-  hi = Math.abs(num)
-  lo = hi % 0x100000000
-  hi = (hi / 0x100000000) | 0
+  Int64 = require 'int64-native-node12'
+  numInt = new Int64(num)
+
+  lo = numInt.low32()
+  hi = numInt.high32()
   
   buf = new Buffer(8)
   for i in [0..7]
